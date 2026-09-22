@@ -4,731 +4,1112 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ระบบสั่งอาหารผ่านแอปพลิเคชัน - โรงเรียนแก่นนครวิทยาลัย</title>
+    <!-- โหลดฟอนต์ Kanit จาก Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
     <style>
         :root {
-            --primary: #f26522;
-            --primary-hover: #d14f14;
+            --primary: #f26522; /* สีแสด KNW */
             --dark: #222222;
             --bg: #f8f9fa;
-            --card-bg: #ffffff;
-            --danger: #dc3545;
-            --success: #28a745;
-            --warning: #ffc107;
-            --info: #17a2b8;
         }
-
-        * { box-sizing: border-box; font-family: 'Kanit', sans-serif; }
-        body { background-color: var(--bg); color: var(--dark); margin: 0; padding: 0; min-height: 100vh; display: flex; flex-direction: column; }
-
-        header {
-            background-color: var(--primary);
-            color: white;
-            padding: 15px;
-            text-align: center;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        body { 
+            font-family: 'Kanit', sans-serif; 
+            background-color: var(--bg); 
+            margin: 0; 
+            padding: 0; 
+            overflow-x: hidden;
         }
-
+        
+        header { 
+            background-color: var(--primary); 
+            color: white; 
+            text-align: center; 
+            padding: 15px; 
+            box-shadow: 0 2px 10px rgba(0,0,0,0.15); 
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
         .school-logo {
-            width: 75px;
+            width: 80px;
             height: auto;
-            margin-bottom: 5px;
-            filter: drop-shadow(0px 2px 4px rgba(0, 0, 0, 0.2));
+            margin-bottom: 8px;
+            filter: drop-shadow(0px 3px 6px rgba(0,0,0,0.25));
+            transition: transform 0.3s ease;
+        }
+        .school-logo:hover {
+            transform: scale(1.05);
+        }
+        header h2 { margin: 0; font-size: 20px; font-weight: 600; }
+        header p { margin: 5px 0 0 0; font-size: 13px; opacity: 0.9; font-weight: 300; }
+        
+        .container { 
+            max-width: 500px; 
+            margin: 20px auto; 
+            background: white; 
+            padding: 20px; 
+            border-radius: 16px; 
+            box-shadow: 0 6px 16px rgba(0,0,0,0.08); 
+            animation: fadeInScale 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
 
-        header h1 { margin: 5px 0 0 0; font-size: 1.4rem; font-weight: 600; }
-        header p { margin: 2px 0 0 0; font-size: 0.85rem; opacity: 0.9; }
-
-        .container {
-            width: 100%;
-            max-width: 500px;
-            margin: 20px auto;
-            background: var(--card-bg);
-            padding: 20px;
-            border-radius: 16px;
-            box-shadow: 0 6px 16px rgba(0,0,0,0.08);
-            flex: 1;
+        @keyframes fadeInScale {
+            0% { opacity: 0; transform: scale(0.96) translateY(10px); }
+            100% { opacity: 1; transform: scale(1) translateY(0); }
         }
 
         .hidden { display: none !important; }
-
-        .form-group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 5px; font-weight: 500; font-size: 0.9rem; }
-        input, select {
-            width: 100%;
-            padding: 10px 12px;
-            border: 1px solid #cccccc;
-            border-radius: 8px;
-            font-size: 0.95rem;
+        
+        input[type="text"], input[type="password"], input[type="number"], select, textarea { 
+            width: 100%; 
+            padding: 10px; 
+            margin-top: 6px; 
+            border-radius: 8px; 
+            border: 1px solid #ccc; 
+            box-sizing: border-box; 
+            font-family: 'Kanit', sans-serif; 
+            transition: all 0.2s ease;
+            font-size: 14px;
+        }
+        input:focus, select:focus {
+            border-color: var(--primary);
             outline: none;
-            transition: border-color 0.2s;
+            box-shadow: 0 0 0 3px rgba(242, 101, 34, 0.2);
         }
-        input:focus, select:focus { border-color: var(--primary); }
 
-        button {
-            width: 100%;
-            padding: 12px;
-            border: none;
-            border-radius: 8px;
-            font-size: 1rem;
-            font-weight: 600;
+        .remember-box {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-top: 8px;
+            font-size: 13px;
+            color: #555;
             cursor: pointer;
-            transition: background 0.2s;
         }
-        .btn-primary { background-color: var(--primary); color: white; }
-        .btn-primary:hover { background-color: var(--primary-hover); }
-        .btn-success { background-color: var(--success); color: white; }
-        .btn-danger { background-color: var(--danger); color: white; }
-        .btn-secondary { background-color: #6c757d; color: white; }
+        .remember-box input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            accent-color: var(--primary);
+            cursor: pointer;
+        }
+        
+        button { 
+            width: 100%;
+            padding: 10px;
+            margin-top: 8px;
+            border-radius: 8px;
+            background-color: var(--primary); 
+            color: white; 
+            border: none; 
+            font-weight: 500; 
+            font-family: 'Kanit', sans-serif;
+            cursor: pointer; 
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); 
+        }
+        button:hover { 
+            opacity: 0.92; 
+            transform: translateY(-1px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        button:active { transform: scale(0.98); }
 
-        .card {
-            border: 1px solid #e0e0e0;
-            border-radius: 12px;
-            padding: 15px;
-            margin-top: 15px;
-            background: #ffffff;
+        .btn-secondary { background-color: #6c757d; margin-top: 5px; }
+        .btn-add { background-color: #28a745; margin-top: 5px; }
+        .btn-warning { background-color: #ffc107; color: #000; margin-top: 5px; }
+        .btn-danger { background-color: #dc3545; color: white; margin-top: 5px; }
+        .btn-success { background-color: #28a745; color: white; margin-top: 5px; }
+        .btn-status { width: auto; padding: 6px 10px; font-size: 11px; margin-right: 3px; }
+
+        .card { 
+            border: 1px solid #e0e0e0; 
+            padding: 12px; 
+            border-radius: 10px; 
+            margin-top: 10px; 
+            background: #fff; 
+            transition: all 0.3s ease;
+        }
+        .card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.06); }
+        
+        .revenue-card { 
+            background: #e8f5e9; 
+            border: 1px solid #c8e6c9; 
+            padding: 15px; 
+            border-radius: 10px; 
+            margin-bottom: 15px; 
+        }
+        .badge { display: inline-block; padding: 4px 8px; border-radius: 12px; font-size: 11px; font-weight: 500; color: white; }
+        .bg-wait { background-color: #ffc107; color: #000; }
+        .bg-cook { background-color: #17a2b8; }
+        .bg-done { background-color: #28a745; }
+        .bg-close { background-color: #6c757d; }
+        .bg-cancel { background-color: #dc3545; }
+
+        .user-bar { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid var(--primary); padding-bottom: 10px; margin-bottom: 15px; }
+        .cart-item { display: flex; justify-content: space-between; align-items: center; background: #f1f1f1; padding: 8px; border-radius: 6px; margin-top: 5px; font-size: 13px; }
+        .menu-management-box { background: #fff8f0; border: 1px solid #ffe8cc; padding: 12px; border-radius: 10px; margin-bottom: 15px; }
+        .history-card { background: #ffffff; border: 1px solid #c8e6c9; padding: 10px; border-radius: 6px; margin-top: 8px; text-align: left; font-size: 12px; }
+
+        .store-closed-banner {
+            background-color: #f8d7da;
+            color: #721c24;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #f5c6cb;
+            margin-bottom: 12px;
+            font-size: 13px;
         }
 
-        .badge {
+        .switch-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #fff;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            margin-bottom: 10px;
+        }
+        .switch {
+            position: relative;
             display: inline-block;
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 500;
+            width: 46px;
+            height: 24px;
         }
-        .badge-wait { background-color: #fff3cd; color: #856404; border: 1px solid #ffeeba; }
-        .badge-cook { background-color: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
-        .badge-done { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
-        .badge-reject { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
-
-        .flex-between { display: flex; justify-content: space-between; align-items: center; }
-        .divider { border-top: 1px dashed #cccccc; margin: 15px 0; }
-        .store-status-box { background: #e8f5e9; border: 1px solid #c8e6c9; padding: 12px; border-radius: 8px; margin-bottom: 15px; }
-        .switch-container { display: flex; align-items: center; justify-content: space-between; }
-
-        /* Toggle Switch */
-        .switch { position: relative; display: inline-block; width: 50px; height: 26px; }
         .switch input { opacity: 0; width: 0; height: 0; }
-        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 34px; }
-        .slider:before { position: absolute; content: ""; height: 20px; width: 20px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
-        input:checked + .slider { background-color: var(--success); }
-        input:checked + .slider:before { transform: translateX(24px); }
+        .slider {
+            position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #ccc; transition: .4s; border-radius: 24px;
+        }
+        .slider:before {
+            position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px;
+            background-color: white; transition: .4s; border-radius: 50%;
+        }
+        input:checked + .slider { background-color: #28a745; }
+        input:checked + .slider:before { transform: translateX(22px); }
+
+        #toast-notification {
+            position: fixed; top: -70px; left: 50%; transform: translateX(-50%);
+            background: #28a745; color: white; padding: 12px 24px; border-radius: 30px;
+            font-size: 14px; font-weight: 500; box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            z-index: 9999; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex; align-items: center; gap: 8px;
+        }
+        #toast-notification.show { top: 20px; }
+        #toast-notification.logout-theme { background: #343a40; }
     </style>
 </head>
 <body>
 
-    <header>
-        <img src="https://knw.ac.th/wp-content/uploads/2024/12/%E0%B9%81%E0%B8%81%E0%B9%88%E0%B8%99%E0%B8%99%E0%B8%84%E0%B8%A3%E0%B8%A7%E0%B8%B4%E0%B8%97%E0%B8%A2%E0%B8%B2%E0%B8%A5%E0%B8%B1%E0%B8%A2-Logo-PNG-color.png" class="school-logo" alt="ตราโรงเรียนแก่นนครวิทยาลัย">
-        <h1>ระบบสั่งอาหารผ่านแอปพลิเคชัน</h1>
-        <p>โรงเรียนแก่นนครวิทยาลัย (Local Mode)</p>
-    </header>
+<div id="toast-notification">
+    <span id="toast-icon">✓</span> <span id="toast-message">ล็อกอินสำเร็จ กำลังเข้าสู่ระบบ..</span>
+</div>
 
-    <div class="container">
+<header>
+    <img src="https://knw.ac.th/wp-content/uploads/2024/12/%E0%B9%81%E0%B8%81%E0%B9%88%E0%B8%99%E0%B8%99%E0%B8%84%E0%B8%A3%E0%B8%A7%E0%B8%B4%E0%B8%97%E0%B8%A2%E0%B8%B2%E0%B8%A5%E0%B8%B1%E0%B8%A2-Logo-PNG-color.png" class="school-logo" alt="ตราโรงเรียนแก่นนครวิทยาลัย">
+    <h2>ระบบสั่งอาหารผ่านแอปพลิเคชัน</h2>
+    <p>โรงเรียนแก่นนครวิทยาลัย (Localhost Demo)</p>
+</header>
 
-        <!-- 1. SINGLE LOGIN VIEW -->
-        <div id="login-view">
-            <h3 style="text-align: center; margin-top: 0;">เข้าสู่ระบบ</h3>
-            <p style="text-align: center; color: #666; font-size: 0.85rem; margin-bottom: 20px;">กรอกรหัสผ่านเพื่อเข้าใช้งานระบบ</p>
-            <form id="login-form">
-                <div class="form-group">
-                    <label>รหัสผ่านเข้าใช้งาน (Password):</label>
-                    <input type="password" id="login-password" placeholder="กรอกรหัสผ่านที่นี่..." required>
-                </div>
-                <button type="submit" class="btn-primary" style="margin-top: 10px;">เข้าสู่ระบบ</button>
-            </form>
-            <div style="margin-top: 25px; padding: 12px; background-color: #f1f3f5; border-radius: 8px; font-size: 0.8rem; color: #555;">
-                <strong>💡 รหัสทดสอบระบบ:</strong><br>
-                • นักเรียน: <code>s48604</code><br>
-                • ร้านค้า: <code>knwstore01</code>
-            </div>
+<!-- 1. หน้าเลือกเข้าสู่ระบบ -->
+<div id="login-screen" class="container">
+    <h3 style="text-align: center; color: var(--primary); font-weight: 600;">เข้าสู่ระบบ</h3>
+    
+    <h4 style="margin-bottom: 5px; color: var(--primary); font-weight: 500;">เข้าสู่ระบบสำหรับนักเรียน</h4>
+    <input type="text" id="student-user" placeholder="Username (s48604)">
+    <input type="password" id="student-pass" placeholder="Password (std48604)">
+    <label class="remember-box">
+        <input type="checkbox" id="remember-student"> จดจำรหัสผ่าน
+    </label>
+    <button onclick="loginAsStudent()">เข้าสู่ระบบนักเรียน</button>
+    
+    <hr style="margin: 20px 0; border: 0.5px solid #eee;">
+    
+    <h4 style="margin-bottom: 5px; font-weight: 500;">เข้าสู่ระบบสำหรับร้านค้า</h4>
+    <input type="text" id="merchant-user" placeholder="Username (KNWSTORE01)">
+    <input type="password" id="merchant-pass" placeholder="Password (knwst001)">
+    <label class="remember-box">
+        <input type="checkbox" id="remember-merchant"> จดจำรหัสผ่าน
+    </label>
+    <button onclick="loginAsMerchant()" class="btn-secondary">เข้าสู่ระบบร้านค้า</button>
+</div>
+
+<!-- 2. หน้าจอนักเรียน -->
+<div id="student-screen" class="container hidden">
+    <div class="user-bar">
+        <div style="font-size: 13px; line-height: 1.4;">
+            <b>นักเรียน:</b> <span id="student-info-display"></span>
         </div>
-
-        <!-- 2. STUDENT DASHBOARD VIEW -->
-        <div id="student-view" class="hidden">
-            <div class="flex-between">
-                <div>
-                    <strong>นักเรียน: 48604</strong> - นายอาทิตย์ เจริญไม้เก่า<br>
-                    <small style="color: #666;">ชั้น ม.6/67 เลขที่ 67</small>
-                </div>
-                <button onclick="logout()" class="btn-secondary" style="width: auto; padding: 6px 12px; font-size: 0.8rem;">ออกจากระบบ</button>
-            </div>
-            <hr class="divider">
-
-            <h4>เลือกร้านค้า & เวลารับอาหาร</h4>
-            <div class="form-group">
-                <label>ร้านค้า:</label>
-                <select id="student-store-select" onchange="loadStudentMenus()">
-                    <option value="KNWSTORE01">ร้านป้าติ๋ม ข้าวแกง</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label>รอบเวลารับอาหาร (แยก ม.ต้น / ม.ปลาย):</label>
-                <select id="student-time-slot">
-                    <option value="คาบ 4 (11.10 น.) - ม.ต้น">คาบ 4 (11.10 น.) - สำหรับ ม.ต้น</option>
-                    <option value="คาบ 5 (12.00 น.) - ม.ปลาย">คาบ 5 (12.00 น.) - สำหรับ ม.ปลาย</option>
-                </select>
-            </div>
-
-            <hr class="divider">
-            <h4>เลือกรายการอาหาร</h4>
-            <div class="form-group" style="display: flex; gap: 8px;">
-                <input type="text" id="search-menu" placeholder="ค้นชื่อเมนู..." onkeyup="filterMenus()">
-                <select id="filter-category" onchange="filterMenus()" style="width: 45%;">
-                    <option value="all">หมวดหมู่ทั้งหมด</option>
-                    <option value="อาหารจานเดียว">อาหารจานเดียว</option>
-                    <option value="เครื่องดื่ม">เครื่องดื่ม</option>
-                    <option value="ของทานเล่น">ของทานเล่น</option>
-                </select>
-            </div>
-
-            <div class="form-group">
-                <label>รายการเมนูอาหาร:</label>
-                <select id="student-menu-select"></select>
-            </div>
-
-            <div class="form-group">
-                <label>รายละเอียดเพิ่มเติม (Note):</label>
-                <input type="text" id="order-note" placeholder="เช่น เผ็ดน้อย, ไม่ใส่ผัก, เพิ่มไข่ดาว">
-            </div>
-
-            <button onclick="addToCart()" class="btn-success">+ เพิ่มลงในรายการสั่งซื้อ</button>
-
-            <!-- Cart Section -->
-            <div class="card" style="background: #fafafa;">
-                <strong>รายการที่เลือกไว้ในตะกร้า:</strong>
-                <div id="cart-items" style="margin-top: 8px; font-size: 0.9rem; color: #555;">ยังไม่มีรายการที่เลือก</div>
-                <div class="flex-between" style="margin-top: 10px; font-weight: bold;">
-                    <span>ราคารวมทั้งหมด:</span>
-                    <span id="cart-total" style="color: var(--primary);">0 บาท</span>
-                </div>
-            </div>
-
-            <button onclick="submitOrder()" class="btn-primary" style="margin-top: 15px;">ยืนยันการส่งออเดอร์ทั้งหมด</button>
-
-            <hr class="divider">
-            <h4>สถานะการสั่งซื้อปัจจุบัน</h4>
-            <div id="student-current-order">
-                <p style="color: #888; font-size: 0.9rem;">ยังไม่มีคำสั่งซื้อในขณะนี้</p>
-            </div>
-
-            <hr class="divider">
-            <div class="flex-between">
-                <h4 style="margin: 0;">ประวัติการสั่งซื้อย้อนหลัง</h4>
-                <button onclick="toggleHistory()" class="btn-secondary" style="width: auto; padding: 4px 8px; font-size: 0.75rem;">ซ่อน/แสดง</button>
-            </div>
-            <div id="student-history" class="hidden" style="margin-top: 10px;"></div>
-        </div>
-
-        <!-- 3. MERCHANT DASHBOARD VIEW -->
-        <div id="merchant-view" class="hidden">
-            <div class="flex-between">
-                <div>
-                    <strong>ร้านค้า: ร้านป้าติ๋ม ข้าวแกง</strong> <small>(KNWSTORE01)</small>
-                </div>
-                <button onclick="logout()" class="btn-secondary" style="width: auto; padding: 6px 12px; font-size: 0.8rem;">ออกจากระบบ</button>
-            </div>
-            <hr class="divider">
-
-            <!-- Store Status Switch -->
-            <div class="store-status-box">
-                <div class="switch-container">
-                    <div>
-                        <strong>สถานะการรับออเดอร์หน้าร้าน</strong><br>
-                        <small id="store-status-text" style="color: var(--success);">● เปิดรับออเดอร์ตามปกติ</small>
-                    </div>
-                    <label class="switch">
-                        <input type="checkbox" id="store-toggle" checked onchange="toggleStoreStatus()">
-                        <span class="slider"></span>
-                    </label>
-                </div>
-            </div>
-
-            <!-- Revenue Summary Card -->
-            <div class="card" style="background-color: #e8f5e9; border-color: #a5d6a7; text-align: center;">
-                <span style="font-size: 0.85rem; color: #2e7d32; font-weight: bold;">สรุปยอดรายรับรวมวันนี้</span>
-                <h2 id="merchant-revenue" style="margin: 5px 0; color: #1b5e20;">0 บาท</h2>
-                <small id="merchant-completed-count" style="color: #388e3c;">ออเดอร์ที่รับสำเร็จแล้ว: 0 รายการ</small>
-                <div style="margin-top: 10px;">
-                    <button onclick="resetDailyRevenue()" class="btn-danger" style="width: auto; padding: 4px 10px; font-size: 0.75rem;">รีเซ็ทยอดขายและประวัติประจำวัน</button>
-                </div>
-            </div>
-
-            <!-- Manage Menu Section -->
-            <div class="card">
-                <h4 style="margin-top: 0; color: var(--primary);">จัดการเมนูอาหารประจำวัน</h4>
-                <div class="form-group">
-                    <label>+ เพิ่มเมนูอาหารใหม่:</label>
-                    <input type="text" id="new-menu-name" placeholder="ชื่อเมนู เช่น ข้าวผัดกะเพราหมูกรอบ">
-                </div>
-                <div style="display: flex; gap: 8px;">
-                    <input type="number" id="new-menu-price" placeholder="ราคา (บาท)" style="width: 40%;">
-                    <select id="new-menu-category" style="width: 60%;">
-                        <option value="อาหารจานเดียว">อาหารจานเดียว</option>
-                        <option value="เครื่องดื่ม">เครื่องดื่ม</option>
-                        <option value="ของทานเล่น">ของทานเล่น</option>
-                    </select>
-                </div>
-                <button onclick="addMerchantMenu()" class="btn-success" style="margin-top: 10px;">เพิ่มเมนูลงร้านค้า</button>
-
-                <div class="divider"></div>
-                <label>แจ้งสถานะเมนู (ขายดี/สินค้าหมด):</label>
-                <div class="form-group">
-                    <select id="manage-menu-select"></select>
-                </div>
-                <div style="display: flex; gap: 8px;">
-                    <button onclick="setMenuSoldOut(true)" class="btn-danger">แจ้งเมนูหมด</button>
-                    <button onclick="setMenuSoldOut(false)" class="btn-success">เปิดขายตามปกติ</button>
-                </div>
-            </div>
-
-            <!-- Orders Queue -->
-            <h4 style="margin-top: 20px;">รายการออเดอร์หน้าร้าน <span id="queue-counter" style="font-size: 0.85rem; color: var(--primary);">(0/50 คิวในรอบนี้)</span></h4>
-            <div id="merchant-orders-list">
-                <p style="color: #888; font-size: 0.9rem;">ไม่มีออเดอร์เข้ามาในขณะนี้</p>
-            </div>
-        </div>
-
+        <button onclick="logout()" class="btn-secondary" style="width: auto; padding: 4px 10px; font-size: 12px; margin-top:0;">ออกจากระบบ</button>
     </div>
 
-    <script>
-        // --- INITIAL DATA & STATES ---
-        const PASSWORDS = {
-            STUDENT: "s48604",
-            MERCHANT: "knwstore01"
-        };
+    <div id="closed-store-banner" class="store-closed-banner hidden">
+        <b>⚠️ ร้านค้าปิดรับออเดอร์ชั่วคราว</b><br>
+        <span id="closed-store-reason"></span>
+    </div>
 
-        const DEFAULT_MENUS = [
-            { id: 1, name: "ข้าวผัดกะเพราหมูกรอบ", price: 45, category: "อาหารจานเดียว", soldOut: false },
-            { id: 2, name: "ข้าวไข่เจียวทรงเครื่อง", price: 35, category: "อาหารจานเดียว", soldOut: false },
-            { id: 3, name: "ก๋วยเตี๋ยวหมูน้ำตก", price: 40, category: "อาหารจานเดียว", soldOut: false },
-            { id: 4, name: "ชาเย็น / ชานมเย็น", price: 20, category: "เครื่องดื่ม", soldOut: false },
-            { id: 5, name: "ลูกชิ้นทอดรวมมิตร", price: 25, category: "ของทานเล่น", soldOut: false }
-        ];
+    <h4 id="form-title" style="font-weight: 500; margin-bottom: 5px;">เลือกร้านค้า & เวลารับอาหาร</h4>
+    
+    <label style="font-size: 13px;">ร้านค้า:</label>
+    <select id="store-select">
+        <option value="ร้านป้าติ๋ม ข้าวแกง">ร้านป้าติ๋ม ข้าวแกง</option>
+    </select>
 
-        let cart = [];
-        let previousOrderCount = 0;
+    <label style="margin-top: 10px; display: block; font-size: 13px;">รอบเวลารับอาหาร (แยก ม.ต้น / ม.ปลาย):</label>
+    <select id="pickup-time-select">
+        <option value="คาบ 4 (11.10 น.) - ม.ต้น">คาบ 4 (11.10 น.) - สำหรับ ม.ต้น</option>
+        <option value="คาบ 5 (12.00 น.) - ม.ปลาย">คาบ 5 (12.00 น.) - สำหรับ ม.ปลาย</option>
+    </select>
 
-        // Init Data in LocalStorage
-        if (!localStorage.getItem('knw_merchant_menus')) {
-            localStorage.setItem('knw_merchant_menus', JSON.stringify(DEFAULT_MENUS));
+    <hr style="margin: 15px 0; border: 0.5px dashed #ccc;">
+
+    <h4 style="font-weight: 500; margin-bottom: 5px;">เลือกรายการอาหาร</h4>
+    
+    <div style="display: flex; gap: 6px; margin-bottom: 8px;">
+        <input type="text" id="search-menu-input" placeholder="🔍 ค้นชื่อเมนู..." onkeyup="filterMenus()" style="margin-top: 0; padding: 6px 10px;">
+        <select id="category-filter-select" onchange="filterMenus()" style="margin-top: 0; padding: 6px; width: 50%;">
+            <option value="ALL">หมวดหมู่ทั้งหมด</option>
+            <option value="อาหารจานเดียว">อาหารจานเดียว</option>
+            <option value="ทานเล่น">ทานเล่น</option>
+            <option value="เครื่องดื่ม">เครื่องดื่ม</option>
+        </select>
+    </div>
+
+    <label style="display: block; font-size: 13px;">รายการเมนูอาหาร:</label>
+    <select id="menu-select">
+    </select>
+
+    <label style="margin-top: 10px; display: block; font-size: 13px;">รายละเอียดเพิ่มเติม (Note):</label>
+    <input type="text" id="item-note" placeholder="เช่น เผ็ดน้อย, ไม่ใส่ผัก, เพิ่มไข่ดาว">
+
+    <button id="btn-add-to-cart" onclick="addToCart()" class="btn-add">+ เพิ่มลงในรายการสั่งซื้อ</button>
+
+    <div style="margin-top: 15px; background: #fafafa; padding: 10px; border-radius: 8px; border: 1px solid #ddd;">
+        <h5 style="margin: 0 0 10px 0; font-size: 14px; font-weight: 500;">รายการที่เลือกไว้ในตะกร้า:</h5>
+        <div id="cart-list">
+            <p style="color: #888; font-size: 12px; margin: 0;">ยังไม่มีรายการที่เลือก</p>
+        </div>
+        <p style="text-align: right; font-weight: 600; margin: 10px 0 0 0; font-size: 14px;">
+            ราคารวมทั้งหมด: <span id="cart-total" style="color: var(--primary);">0</span> บาท
+        </p>
+    </div>
+
+    <button id="btn-submit-order" onclick="submitOrder()" style="margin-top: 15px;">ยืนยันการส่งออเดอร์ทั้งหมด</button>
+
+    <hr style="margin: 20px 0;">
+    <h4 style="font-weight: 500;">สถานะการสั่งซื้อปัจจุบัน</h4>
+    <div id="student-order-status">
+        <p style="color: #888; font-size: 13px;">ยังไม่มีคำสั่งซื้อในขณะนี้</p>
+    </div>
+
+    <hr style="margin: 20px 0;">
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+        <h4 style="font-weight: 500; margin:0;">ประวัติการสั่งซื้อย้อนหลัง</h4>
+        <button onclick="toggleStudentHistory()" class="btn-secondary" style="width: auto; padding: 4px 8px; font-size: 11px; margin-top:0;">ซ่อน/แสดง</button>
+    </div>
+    <div id="student-history-container" style="margin-top: 10px;">
+        <p style="color: #888; font-size: 12px;">ยังไม่มีประวัติการสั่งซื้อ</p>
+    </div>
+</div>
+
+<!-- 3. หน้าจอรอบร้านค้า -->
+<div id="merchant-screen" class="container hidden">
+    <div class="user-bar">
+        <span><b>ร้านค้า:</b> ร้านป้าติ๋ม ข้าวแกง <small style="color: #666;">(KNWSTORE01)</small></span>
+        <button onclick="logout()" class="btn-secondary" style="width: auto; padding: 4px 10px; font-size: 12px; margin-top:0;">ออกจากระบบ</button>
+    </div>
+
+    <div class="switch-container">
+        <div>
+            <b>สถานะการรับออเดอร์หน้าร้าน</b><br>
+            <small id="store-status-text" style="color: #28a745;">● เปิดรับออเดอร์ตามปกติ</small>
+        </div>
+        <label class="switch">
+            <input type="checkbox" id="store-toggle-switch" checked onchange="toggleStoreOpenStatus()">
+            <span class="slider"></span>
+        </label>
+    </div>
+    <div id="merchant-closed-note-box" class="hidden" style="margin-bottom: 12px;">
+        <input type="text" id="merchant-closed-note" placeholder="ใส่ระบุหมายเหตุปิดร้าน เช่น วัตถุดิบหมด, พักร้าน 15 นาที" style="margin-top:0; font-size:12px;">
+        <button onclick="saveClosedNote()" class="btn-secondary" style="font-size:11px; padding:4px;">บันทึกหมายเหตุปิดร้าน</button>
+    </div>
+
+    <div class="revenue-card">
+        <div style="text-align: center;">
+            <span style="font-size: 13px; color: #2e7d32; font-weight: 600;">สรุปยอดรายรับรวมวันนี้</span>
+            <h2 style="margin: 5px 0; color: #1b5e20; font-weight: 600;" id="daily-revenue">0 บาท</h2>
+            <small style="color: #4caf50;" id="completed-orders-count">ออเดอร์ที่รับสำเร็จแล้ว: 0 รายการ</small>
+        </div>
+        
+        <hr style="border: 0.5px solid #c8e6c9; margin: 12px 0;">
+        
+        <h5 style="margin: 0 0 8px 0; color: #2e7d32; font-size: 13px; font-weight: 500;">ประวัติการรับออเดอร์ที่สำเร็จ:</h5>
+        <div id="revenue-history-list">
+            <p style="color: #888; font-size: 12px; margin: 0; text-align: center;">ยังไม่มีประวัติการขายในวันนี้</p>
+        </div>
+
+        <div style="text-align: center; margin-top: 10px;">
+            <button onclick="resetDailyRevenue()" class="btn-danger" style="font-size: 10px; padding: 4px 8px; width: auto;">รีเซ็ตยอดขายและประวัติประจำวัน</button>
+        </div>
+    </div>
+
+    <div class="menu-management-box">
+        <h4 style="margin: 0 0 10px 0; color: var(--primary); font-weight: 500;">จัดการเมนูอาหารประจำวัน</h4>
+        
+        <div style="margin-bottom: 12px;">
+            <label style="font-size: 12px; font-weight: 600;">+ เพิ่มเมนูอาหารใหม่:</label>
+            <input type="text" id="new-menu-name" placeholder="ชื่อเมนู เช่น ข้าวผัดกะเพราหมูกรอบ" style="margin-top: 4px;">
+            <div style="display:flex; gap:5px;">
+                <input type="number" id="new-menu-price" placeholder="ราคา (บาท)" style="margin-top: 4px;">
+                <select id="new-menu-category" style="margin-top: 4px;">
+                    <option value="อาหารจานเดียว">อาหารจานเดียว</option>
+                    <option value="ทานเล่น">ทานเล่น</option>
+                    <option value="เครื่องดื่ม">เครื่องดื่ม</option>
+                </select>
+            </div>
+            <button onclick="addNewMenu()" class="btn-add" style="font-size: 12px; padding: 6px;">เพิ่มเมนูลงร้านค้า</button>
+        </div>
+
+        <hr style="border: 0.5px dashed #ccc; margin: 10px 0;">
+
+        <div>
+            <label style="font-size: 12px; font-weight: 600;">แจ้งสถานะเมนู (ขายดี/สินค้าหมด):</label>
+            <select id="merchant-menu-select" style="margin-top: 4px;">
+            </select>
+            <div style="display: flex; gap: 5px; margin-top: 4px;">
+                <button onclick="toggleMenuStatus(false)" class="btn-danger" style="font-size: 11px; padding: 6px;">แจ้งเมนูหมด</button>
+                <button onclick="toggleMenuStatus(true)" class="btn-success" style="font-size: 11px; padding: 6px;">เปิดขายตามปกติ</button>
+            </div>
+        </div>
+    </div>
+
+    <h4 style="color: var(--primary); margin-bottom: 5px; font-weight: 500;">รายการออเดอร์หน้าร้าน <small id="queue-count-display" style="color:#555; font-size:12px;">(0/50 คิว)</small></h4>
+    <div id="merchant-order-list">
+        <p style="color: #888; font-size: 13px;">ไม่มีออเดอร์เข้ามาในขณะนี้</p>
+    </div>
+</div>
+
+<script>
+    let cart = []; 
+    let activeOrder = JSON.parse(localStorage.getItem('knw_order')) || null;
+    let completedOrders = JSON.parse(localStorage.getItem('knw_completed_orders')) || [];
+    let merchantMenus = JSON.parse(localStorage.getItem('knw_merchant_menus')) || [
+        { id: 101, name: "ข้าวผัดกะเพราไก่ ไข่ดาว", price: 40, category: "อาหารจานเดียว", available: true },
+        { id: 102, name: "ข้าวไก่ทอดกระเทียม", price: 40, category: "อาหารจานเดียว", available: true },
+        { id: 103, name: "ลูกชิ้นทอดชุดใหญ่", price: 20, category: "ทานเล่น", available: true },
+        { id: 104, name: "ชานมเย็นแก้วใหญ่", price: 15, category: "เครื่องดื่ม", available: true }
+    ];
+
+    let isStoreOpen = localStorage.getItem('knw_store_open') !== 'false';
+    let storeClosedReason = localStorage.getItem('knw_store_closed_reason') || "ร้านค้าปิดรับออเดอร์ชั่วคราว";
+
+    let lastActiveOrderJSON = "";
+    let lastCompletedOrdersJSON = "";
+    let previousOrderIdForSound = activeOrder ? activeOrder.id : null;
+
+    const MAX_QUEUE_LIMIT = 50;
+
+    const currentStudent = {
+        studentId: "46767",
+        name: "นายอาทิตย์ เจริญไม้เก่า",
+        classRoom: "ม.6/67",
+        no: "67"
+    };
+
+    window.onload = function() {
+        setInterval(syncOrderData, 1000);
+        renderMenuSelects();
+        loadSavedCredentials();
+        updateStoreStatusUI();
+    };
+
+    function playNewOrderSound() {
+        try {
+            const ctx = new (window.AudioContext || window.webkitAudioContext)();
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(880, ctx.currentTime);
+            gain.gain.setValueAtTime(0.3, ctx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.00001, ctx.currentTime + 0.8);
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start();
+            osc.stop(ctx.currentTime + 0.8);
+        } catch(e) {
+            console.log("Audio not allowed yet");
         }
-        if (!localStorage.getItem('knw_store_open')) {
-            localStorage.setItem('knw_store_open', 'true');
+    }
+
+    function loadSavedCredentials() {
+        const savedStd = JSON.parse(localStorage.getItem('knw_remember_student'));
+        if (savedStd) {
+            document.getElementById('student-user').value = savedStd.u;
+            document.getElementById('student-pass').value = savedStd.p;
+            document.getElementById('remember-student').checked = true;
         }
 
-        // Single Login Form Handler
-        document.getElementById('login-form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const pwd = document.getElementById('login-password').value.trim();
+        const savedMer = JSON.parse(localStorage.getItem('knw_remember_merchant'));
+        if (savedMer) {
+            document.getElementById('merchant-user').value = savedMer.u;
+            document.getElementById('merchant-pass').value = savedMer.p;
+            document.getElementById('remember-merchant').checked = true;
+        }
+    }
 
-            if (pwd === PASSWORDS.STUDENT) {
-                document.getElementById('login-view').classList.add('hidden');
-                document.getElementById('student-view').classList.remove('hidden');
-                loadStudentMenus();
-                renderStudentOrders();
-            } else if (pwd === PASSWORDS.MERCHANT) {
-                document.getElementById('login-view').classList.add('hidden');
-                document.getElementById('merchant-view').classList.remove('hidden');
-                initMerchantView();
+    function showToast(msg, isLogout = false) {
+        const toast = document.getElementById('toast-notification');
+        const icon = document.getElementById('toast-icon');
+        document.getElementById('toast-message').innerText = msg;
+        
+        if (isLogout) {
+            toast.classList.add('logout-theme');
+            icon.innerText = "ℹ";
+        } else {
+            toast.classList.remove('logout-theme');
+            icon.innerText = "✓";
+        }
+
+        toast.classList.add('show');
+        setTimeout(() => { toast.classList.remove('show'); }, 3000);
+    }
+
+    function loginAsStudent() {
+        const u = document.getElementById('student-user').value.trim();
+        const p = document.getElementById('student-pass').value;
+        const remember = document.getElementById('remember-student').checked;
+
+        if (u.toUpperCase() === "S48604" && p === "std48604") {
+            if (remember) {
+                localStorage.setItem('knw_remember_student', JSON.stringify({ u, p }));
             } else {
-                alert('❌ รหัสผ่านไม่ถูกต้อง กรุณาตรวจสอบอีกครั้ง!');
+                localStorage.removeItem('knw_remember_student');
             }
+
+            showToast("ล็อกอินสำเร็จ กำลังเข้าสู่ระบบ..");
+            setTimeout(() => {
+                document.getElementById('login-screen').classList.add('hidden');
+                document.getElementById('student-screen').classList.remove('hidden');
+                document.getElementById('student-info-display').innerHTML = 
+                    `<b>${currentStudent.studentId}</b> - ${currentStudent.name} <br>ชั้น ${currentStudent.classRoom} เลขที่ ${currentStudent.no}`;
+                    
+                forceRenderAll();
+                renderMenuSelects();
+                renderStudentHistory();
+            }, 1200);
+        } else {
+            alert("Username หรือ Password ของนักเรียนไม่ถูกต้อง!");
+        }
+    }
+
+    function loginAsMerchant() {
+        const u = document.getElementById('merchant-user').value.trim();
+        const p = document.getElementById('merchant-pass').value;
+        const remember = document.getElementById('remember-merchant').checked;
+
+        if (u.toUpperCase() === "KNWSTORE01" && p === "knwst001") {
+            if (remember) {
+                localStorage.setItem('knw_remember_merchant', JSON.stringify({ u, p }));
+            } else {
+                localStorage.removeItem('knw_remember_merchant');
+            }
+
+            showToast("ล็อกอินสำเร็จ กำลังเข้าสู่ระบบ..");
+            setTimeout(() => {
+                document.getElementById('login-screen').classList.add('hidden');
+                document.getElementById('merchant-screen').classList.remove('hidden');
+                forceRenderAll();
+                renderMenuSelects();
+            }, 1200);
+        } else {
+            alert("Username หรือ Password ของร้านค้าไม่ถูกต้อง!");
+        }
+    }
+
+    function logout() {
+        showToast("ออกจากระบบสำเร็จ กำลังกลับสู่หน้าหลัก...", true);
+
+        if (!document.getElementById('remember-student').checked) {
+            document.getElementById('student-user').value = "";
+            document.getElementById('student-pass').value = "";
+        }
+        if (!document.getElementById('remember-merchant').checked) {
+            document.getElementById('merchant-user').value = "";
+            document.getElementById('merchant-pass').value = "";
+        }
+
+        setTimeout(() => {
+            document.getElementById('student-screen').classList.add('hidden');
+            document.getElementById('merchant-screen').classList.add('hidden');
+            document.getElementById('login-screen').classList.remove('hidden');
+        }, 1200);
+    }
+
+    function toggleStoreOpenStatus() {
+        isStoreOpen = document.getElementById('store-toggle-switch').checked;
+        localStorage.setItem('knw_store_open', isStoreOpen);
+        
+        if (!isStoreOpen) {
+            document.getElementById('merchant-closed-note-box').classList.remove('hidden');
+        } else {
+            document.getElementById('merchant-closed-note-box').classList.add('hidden');
+        }
+        updateStoreStatusUI();
+    }
+
+    function saveClosedNote() {
+        const note = document.getElementById('merchant-closed-note').value.trim();
+        if (note) {
+            storeClosedReason = note;
+            localStorage.setItem('knw_store_closed_reason', note);
+            alert("บันทึกหมายเหตุปิดร้านเรียบร้อยแล้ว!");
+            updateStoreStatusUI();
+        }
+    }
+
+    function updateStoreStatusUI() {
+        const statusText = document.getElementById('store-status-text');
+        const closedBanner = document.getElementById('closed-store-banner');
+        const closedReasonSpan = document.getElementById('closed-store-reason');
+        const btnAdd = document.getElementById('btn-add-to-cart');
+        const btnSubmit = document.getElementById('btn-submit-order');
+
+        document.getElementById('store-toggle-switch').checked = isStoreOpen;
+
+        if (isStoreOpen) {
+            statusText.innerHTML = "● เปิดรับออเดอร์ตามปกติ";
+            statusText.style.color = "#28a745";
+            closedBanner.classList.add('hidden');
+            if(btnAdd) btnAdd.disabled = false;
+            if(btnSubmit) btnSubmit.disabled = false;
+        } else {
+            statusText.innerHTML = "🔴 ปิดรับออเดอร์ชั่วคราว";
+            statusText.style.color = "#dc3545";
+            closedReasonSpan.innerText = storeClosedReason;
+            closedBanner.classList.remove('hidden');
+            if(btnAdd) btnAdd.disabled = true;
+            if(btnSubmit) btnSubmit.disabled = true;
+        }
+    }
+
+    function addNewMenu() {
+        const nameInput = document.getElementById('new-menu-name');
+        const priceInput = document.getElementById('new-menu-price');
+        const categorySelect = document.getElementById('new-menu-category');
+        
+        const name = nameInput.value.trim();
+        const price = parseInt(priceInput.value);
+        const category = categorySelect.value;
+
+        if (!name || isNaN(price) || price <= 0) {
+            alert("กรุณากรอกชื่อเมนูและราคาให้ถูกต้อง!");
+            return;
+        }
+
+        merchantMenus.push({
+            id: Date.now(),
+            name: name,
+            price: price,
+            category: category,
+            available: true
         });
 
-        function logout() {
-            document.getElementById('login-password').value = '';
-            document.getElementById('student-view').classList.add('hidden');
-            document.getElementById('merchant-view').classList.add('hidden');
-            document.getElementById('login-view').classList.remove('hidden');
+        localStorage.setItem('knw_merchant_menus', JSON.stringify(merchantMenus));
+        nameInput.value = "";
+        priceInput.value = "";
+        alert("เพิ่มเมนูใหม่เรียบร้อยแล้ว!");
+        renderMenuSelects();
+    }
+
+    function toggleMenuStatus(isAvailable) {
+        const menuSelect = document.getElementById('merchant-menu-select');
+        const selectedId = parseInt(menuSelect.value);
+
+        if (!selectedId) {
+            alert("กรุณาเลือกเมนูที่ต้องการปรับสถานะ!");
+            return;
         }
 
-        // --- STUDENT FUNCTIONS ---
-        function loadStudentMenus() {
-            const menus = JSON.parse(localStorage.getItem('knw_merchant_menus')) || [];
-            const select = document.getElementById('student-menu-select');
-            select.innerHTML = '';
-
-            const activeMenus = menus.filter(m => !m.soldOut);
-            if (activeMenus.length === 0) {
-                select.innerHTML = '<option value="">-- ไม่มีรายการเมนูที่พร้อมขาย --</option>';
-                return;
-            }
-
-            activeMenus.forEach(m => {
-                const opt = document.createElement('option');
-                opt.value = m.id;
-                opt.textContent = `${m.name} - ${m.price} บาท [${m.category}]`;
-                select.appendChild(opt);
-            });
+        const menuIndex = merchantMenus.findIndex(m => m.id === selectedId);
+        if (menuIndex !== -1) {
+            merchantMenus[menuIndex].available = isAvailable;
+            localStorage.setItem('knw_merchant_menus', JSON.stringify(merchantMenus));
+            alert(`อัปเดตสถานะเมนู "${merchantMenus[menuIndex].name}" เรียบร้อยแล้ว`);
+            renderMenuSelects();
         }
+    }
 
-        function filterMenus() {
-            const search = document.getElementById('search-menu').value.toLowerCase();
-            const cat = document.getElementById('filter-category').value;
-            const menus = JSON.parse(localStorage.getItem('knw_merchant_menus')) || [];
-            const select = document.getElementById('student-menu-select');
+    function filterMenus() {
+        renderMenuSelects();
+    }
 
-            select.innerHTML = '';
-            const filtered = menus.filter(m => {
-                const matchSearch = m.name.toLowerCase().includes(search);
-                const matchCat = cat === 'all' || m.category === cat;
-                return matchSearch && matchCat && !m.soldOut;
-            });
+    function renderMenuSelects() {
+        const studentSelect = document.getElementById('menu-select');
+        const searchText = (document.getElementById('search-menu-input')?.value || "").toLowerCase();
+        const categoryFilter = document.getElementById('category-filter-select')?.value || "ALL";
 
-            if (filtered.length === 0) {
-                select.innerHTML = '<option value="">-- ไม่พบรายการเมนูอาหารที่ค้นหา --</option>';
-                return;
-            }
+        let filtered = merchantMenus.filter(m => {
+            const matchSearch = m.name.toLowerCase().includes(searchText);
+            const matchCat = (categoryFilter === "ALL") || (m.category === categoryFilter);
+            return matchSearch && matchCat;
+        });
 
-            filtered.forEach(m => {
-                const opt = document.createElement('option');
-                opt.value = m.id;
-                opt.textContent = `${m.name} - ${m.price} บาท [${m.category}]`;
-                select.appendChild(opt);
-            });
-        }
-
-        function addToCart() {
-            const isStoreOpen = localStorage.getItem('knw_store_open') === 'true';
-            if (!isStoreOpen) {
-                alert('⚠️ ขณะนี้ร้านค้าปิดรับออเดอร์ชั่วคราว ไม่สามารถสั่งซื้อได้');
-                return;
-            }
-
-            const menuId = document.getElementById('student-menu-select').value;
-            const note = document.getElementById('order-note').value.trim();
-            if (!menuId) return;
-
-            const menus = JSON.parse(localStorage.getItem('knw_merchant_menus')) || [];
-            const selectedMenu = menus.find(m => m.id == menuId);
-
-            cart.push({ ...selectedMenu, note: note });
-            document.getElementById('order-note').value = '';
-            renderCart();
-        }
-
-        function renderCart() {
-            const cartContainer = document.getElementById('cart-items');
-            const totalContainer = document.getElementById('cart-total');
-
-            if (cart.length === 0) {
-                cartContainer.innerHTML = 'ยังไม่มีรายการที่เลือก';
-                totalContainer.textContent = '0 บาท';
-                return;
-            }
-
-            let html = '';
-            let total = 0;
-            cart.forEach((item, index) => {
-                total += item.price;
-                html += `<div class="flex-between" style="margin-bottom: 4px;">
-                    <span>${index + 1}. ${item.name} ${item.note ? `<small>(${item.note})</small>` : ''}</span>
-                    <span>${item.price} บาท <a href="#" onclick="removeFromCart(${index})" style="color:red; text-decoration:none;">[ลบ]</a></span>
-                </div>`;
-            });
-
-            cartContainer.innerHTML = html;
-            totalContainer.textContent = total + ' บาท';
-        }
-
-        function removeFromCart(index) {
-            cart.splice(index, 1);
-            renderCart();
-        }
-
-        function submitOrder() {
-            if (cart.length === 0) {
-                alert('กรุณาเลือกรายการอาหารลงตะกร้าก่อนส่งออเดอร์!');
-                return;
-            }
-
-            const isStoreOpen = localStorage.getItem('knw_store_open') === 'true';
-            if (!isStoreOpen) {
-                alert('⚠️ ร้านค้าปิดรับออเดอร์กะทันหัน ไม่สามารถส่งออเดอร์ได้');
-                return;
-            }
-
-            const existingOrders = JSON.parse(localStorage.getItem('knw_order')) || [];
-            if (existingOrders.length >= 50) {
-                alert('⚠️ ขณะนี้จำนวนคิวออเดอร์เต็ม 50 คิวแล้ว กรุณารอเคาน์เตอร์เคลียร์คิวสักครู่');
-                return;
-            }
-
-            const slot = document.getElementById('student-time-slot').value;
-            const newOrder = {
-                id: 'KNW-' + Math.floor(1000 + Math.random() * 9000),
-                studentId: '48604',
-                studentName: 'นายอาทิตย์ เจริญไม้เก่า',
-                slot: slot,
-                items: [...cart],
-                total: cart.reduce((sum, item) => sum + item.price, 0),
-                status: 'รอรับออเดอร์',
-                timestamp: new Date().toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' })
-            };
-
-            existingOrders.push(newOrder);
-            localStorage.setItem('knw_order', JSON.stringify(existingOrders));
-
-            cart = [];
-            renderCart();
-            alert(`✅ ส่งคำสั่งซื้อสำเร็จ! รหัสออเดอร์ของคุณคือ: ${newOrder.id}`);
-            renderStudentOrders();
-        }
-
-        function renderStudentOrders() {
-            const orders = JSON.parse(localStorage.getItem('knw_order')) || [];
-            const myOrders = orders.filter(o => o.studentId === '48604');
-            const container = document.getElementById('student-current-order');
-
-            if (myOrders.length === 0) {
-                container.innerHTML = '<p style="color: #888; font-size: 0.9rem;">ยังไม่มีคำสั่งซื้อในขณะนี้</p>';
-                return;
-            }
-
-            let html = '';
-            myOrders.reverse().forEach(o => {
-                let badgeClass = 'badge-wait';
-                if (o.status === 'กำลังปรุง') badgeClass = 'badge-cook';
-                if (o.status === 'ทำเสร็จแล้ว') badgeClass = 'badge-done';
-                if (o.status.includes('ไม่สามารถรับออเดอร์')) badgeClass = 'badge-reject';
-
-                html += `<div class="card">
-                    <div class="flex-between">
-                        <strong>รหัส: ${o.id}</strong>
-                        <span class="badge ${badgeClass}">${o.status}</span>
-                    </div>
-                    <small style="color: #666;">รอบรับ: ${o.slot} | เวลาสั่ง: ${o.timestamp}</small>
-                    <div style="margin-top: 8px; font-size: 0.9rem;">
-                        ${o.items.map(i => `• ${i.name}${i.note ? `(${i.note})` : ''}`).join('<br>')}
-                    </div>
-                    <div style="margin-top: 8px; font-weight: bold; color: var(--primary);">ราคารวม: ${o.total} บาท</div>
-                    ${o.status === 'ทำเสร็จแล้ว' ? `<button onclick="confirmReceived('${o.id}')" class="btn-success" style="margin-top: 10px; padding: 6px;">กดยืนยันการรับอาหารแล้ว</button>` : ''}
-                </div>`;
-            });
-
-            container.innerHTML = html;
-        }
-
-        function confirmReceived(orderId) {
-            let orders = JSON.parse(localStorage.getItem('knw_order')) || [];
-            const completedOrders = JSON.parse(localStorage.getItem('knw_completed_orders')) || [];
-
-            const index = orders.findIndex(o => o.id === orderId);
-            if (index !== -1) {
-                orders[index].status = 'ได้รับอาหารแล้ว';
-                completedOrders.push(orders[index]);
-                orders.splice(index, 1);
-
-                localStorage.setItem('knw_order', JSON.stringify(orders));
-                localStorage.setItem('knw_completed_orders', JSON.stringify(completedOrders));
-
-                alert('ขอบคุณที่ใช้บริการ! ขอให้รับประทานอาหารให้อร่อยครับ');
-                renderStudentOrders();
-            }
-        }
-
-        function toggleHistory() {
-            const hist = document.getElementById('student-history');
-            hist.classList.toggle('hidden');
-            if (!hist.classList.contains('hidden')) {
-                const completed = JSON.parse(localStorage.getItem('knw_completed_orders')) || [];
-                const myHistory = completed.filter(o => o.studentId === '48604');
-                if (myHistory.length === 0) {
-                    hist.innerHTML = '<p style="color: #888; font-size: 0.85rem;">ยังไม่มีประวัติการสั่งซื้อที่สำเร็จ</p>';
-                    return;
+        if (filtered.length === 0) {
+            studentSelect.innerHTML = '<option value="">-- ไม่พบรายการเมนูอาหารที่ค้นหา --</option>';
+        } else {
+            let studentHtml = '<option value="">-- เลือกรายการอาหาร --</option>';
+            filtered.forEach(menu => {
+                if (menu.available) {
+                    studentHtml += `<option value="${menu.name}" data-price="${menu.price}">[${menu.category}] ${menu.name} - ${menu.price} บาท</option>`;
+                } else {
+                    studentHtml += `<option value="${menu.name}" data-price="${menu.price}" disabled style="color: #dc3545;">[${menu.category}] ${menu.name} - ${menu.price} บาท (สินค้าหมด)</option>`;
                 }
-                hist.innerHTML = myHistory.map(o => `
-                    <div class="card" style="background: #f8f9fa;">
-                        <small style="color:#666;">${o.timestamp} - ${o.id}</small><br>
-                        <strong>${o.items.map(i=>i.name).join(', ')}</strong> (${o.total} บาท)
-                    </div>
-                `).join('');
-            }
-        }
-
-        // --- MERCHANT FUNCTIONS ---
-        function initMerchantView() {
-            const isOpen = localStorage.getItem('knw_store_open') === 'true';
-            document.getElementById('store-toggle').checked = isOpen;
-            updateStoreStatusUI(isOpen);
-
-            loadMerchantMenuSelect();
-            renderMerchantOrders();
-        }
-
-        function toggleStoreStatus() {
-            const isOpen = document.getElementById('store-toggle').checked;
-            localStorage.setItem('knw_store_open', isOpen);
-            updateStoreStatusUI(isOpen);
-        }
-
-        function updateStoreStatusUI(isOpen) {
-            const txt = document.getElementById('store-status-text');
-            if (isOpen) {
-                txt.textContent = '● เปิดรับออเดอร์ตามปกติ';
-                txt.style.color = 'var(--success)';
-            } else {
-                txt.textContent = '▲ ปิดรับออเดอร์ชั่วคราว';
-                txt.style.color = 'var(--danger)';
-            }
-        }
-
-        function loadMerchantMenuSelect() {
-            const menus = JSON.parse(localStorage.getItem('knw_merchant_menus')) || [];
-            const select = document.getElementById('manage-menu-select');
-            select.innerHTML = '';
-
-            menus.forEach(m => {
-                const opt = document.createElement('option');
-                opt.value = m.id;
-                opt.textContent = `${m.name} (${m.price} บาท) ${m.soldOut ? '[สินค้าหมด]' : ''}`;
-                select.appendChild(opt);
             });
+            studentSelect.innerHTML = studentHtml;
         }
 
-        function addMerchantMenu() {
-            const name = document.getElementById('new-menu-name').value.trim();
-            const price = parseFloat(document.getElementById('new-menu-price').value);
-            const cat = document.getElementById('new-menu-category').value;
+        const merchantSelect = document.getElementById('merchant-menu-select');
+        if (merchantMenus.length === 0) {
+            merchantSelect.innerHTML = '<option value="">-- ยังไม่มีรายการเมนู --</option>';
+        } else {
+            let merchantHtml = '<option value="">-- เลือกเมนูที่ต้องการจัดการ --</option>';
+            merchantMenus.forEach(menu => {
+                const statusText = menu.available ? "[พร้อมขาย]" : "[สินค้าหมด]";
+                merchantHtml += `<option value="${menu.id}">[${menu.category}] ${menu.name} - ${menu.price} บาท ${statusText}</option>`;
+            });
+            merchantSelect.innerHTML = merchantHtml;
+        }
+    }
 
-            if (!name || isNaN(price)) {
-                alert('กรุณากรอกชื่อเมนูและราคาให้ถูกต้อง');
+    function addToCart() {
+        if (!isStoreOpen) {
+            alert("ขออภัย ขณะนี้ร้านค้าปิดรับออเดอร์ชั่วคราว: " + storeClosedReason);
+            return;
+        }
+
+        const menuSelect = document.getElementById('menu-select');
+        const selectedOption = menuSelect.options[menuSelect.selectedIndex];
+        
+        if (!selectedOption || !selectedOption.value) {
+            alert("กรุณาเลือกเมนูอาหารก่อนครับ!");
+            return;
+        }
+
+        if (selectedOption.disabled) {
+            alert("ขออภัย เมนูนี้นักเรียนไม่สามารถเลือกได้เนื่องจากสินค้าหมด!");
+            return;
+        }
+
+        const name = selectedOption.value;
+        const price = parseInt(selectedOption.getAttribute('data-price'));
+        const note = document.getElementById('item-note').value || "ปกติ";
+
+        cart.push({ name: name, price: price, note: note });
+        document.getElementById('item-note').value = ""; 
+        renderCart();
+    }
+
+    function removeFromCart(index) {
+        cart.splice(index, 1);
+        renderCart();
+    }
+
+    function renderCart() {
+        const cartList = document.getElementById('cart-list');
+        const cartTotal = document.getElementById('cart-total');
+        
+        if (cart.length === 0) {
+            cartList.innerHTML = '<p style="color: #888; font-size: 12px; margin: 0;">ยังไม่มีรายการที่เลือก</p>';
+            cartTotal.innerText = "0";
+            return;
+        }
+
+        let html = "";
+        let total = 0;
+
+        cart.forEach((item, index) => {
+            total += item.price;
+            html += `
+                <div class="cart-item">
+                    <div>
+                        <b>${index + 1}. ${item.name}</b> (${item.price} บาท)<br>
+                        <small style="color: #666;">รายละเอียด: ${item.note}</small>
+                    </div>
+                    <button class="btn-danger" style="padding:2px 6px; width:auto; font-size:11px; margin-top:0;" onclick="removeFromCart(${index})">ลบ</button>
+                </div>
+            `;
+        });
+
+        cartList.innerHTML = html;
+        cartTotal.innerText = total;
+    }
+
+    function submitOrder() {
+        if (!isStoreOpen) {
+            alert("ขออภัย ขณะนี้ร้านค้าปิดรับออเดอร์ชั่วคราว!");
+            return;
+        }
+
+        if (activeOrder && activeOrder.status !== 'ได้รับอาหารแล้ว' && !activeOrder.status.includes('ยกเลิก')) {
+            const currentQueueCount = completedOrders.length + 1; 
+            if (currentQueueCount > MAX_QUEUE_LIMIT) {
+                alert(`ขออภัย ขณะนี้คิวรับอาหารเต็มแล้ว (${MAX_QUEUE_LIMIT}/${MAX_QUEUE_LIMIT} คิว) กรุณารอสักครู่!`);
                 return;
             }
-
-            const menus = JSON.parse(localStorage.getItem('knw_merchant_menus')) || [];
-            menus.push({
-                id: Date.now(),
-                name: name,
-                price: price,
-                category: cat,
-                soldOut: false
-            });
-
-            localStorage.setItem('knw_merchant_menus', JSON.stringify(menus));
-            document.getElementById('new-menu-name').value = '';
-            document.getElementById('new-menu-price').value = '';
-
-            alert('เพิ่มเมนูอาหารใหม่เรียบร้อยแล้ว');
-            loadMerchantMenuSelect();
         }
 
-        function setMenuSoldOut(status) {
-            const id = document.getElementById('manage-menu-select').value;
-            if (!id) return;
-
-            let menus = JSON.parse(localStorage.getItem('knw_merchant_menus')) || [];
-            const idx = menus.findIndex(m => m.id == id);
-            if (idx !== -1) {
-                menus[idx].soldOut = status;
-                localStorage.setItem('knw_merchant_menus', JSON.stringify(menus));
-                alert(`อัปเดตสถานะเมนู ${menus[idx].name} เรียบร้อยแล้ว`);
-                loadMerchantMenuSelect();
-            }
+        if (cart.length === 0) {
+            alert("กรุณาเลือกเมนูอย่างน้อย 1 รายการก่อนส่งออเดอร์!");
+            return;
         }
 
-        function playBeepSound() {
-            try {
-                const ctx = new (window.AudioContext || window.webkitAudioContext)();
-                const osc = ctx.createOscillator();
-                osc.type = 'sine';
-                osc.frequency.setValueAtTime(880, ctx.currentTime);
-                osc.connect(ctx.destination);
-                osc.start();
-                osc.stop(ctx.currentTime + 0.3);
-            } catch(e) {}
+        const store = document.getElementById('store-select').value;
+        const pickupTime = document.getElementById('pickup-time-select').value;
+        const orderId = "KNW-" + Math.floor(1000 + Math.random() * 9000);
+        let totalPrice = cart.reduce((sum, item) => sum + item.price, 0);
+
+        activeOrder = {
+            id: orderId,
+            studentId: currentStudent.studentId,
+            studentName: currentStudent.name,
+            studentClass: currentStudent.classRoom,
+            studentNo: currentStudent.no,
+            store: store,
+            pickupTime: pickupTime,
+            items: [...cart], 
+            totalPrice: totalPrice,
+            status: 'รอรับออเดอร์',
+            cancelReason: '',
+            time: new Date().toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' })
+        };
+
+        localStorage.setItem('knw_order', JSON.stringify(activeOrder));
+        alert("ส่งคำสั่งซื้อสำเร็จ! หมายเลขออเดอร์: " + orderId);
+        cart = []; 
+        renderCart();
+        forceRenderAll();
+    }
+
+    function editOrder() {
+        if (activeOrder && activeOrder.items) {
+            cart = [...activeOrder.items];
+            renderCart();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            alert("ดึงรายการอาหารเดิมกลับมาที่ตะกร้าแล้ว!");
+        }
+    }
+
+    // ลบการสั่งซื้อที่ถูกปฏิเสธออกจากหน้าจอของนักเรียน
+    function dismissRejectedOrder() {
+        if (confirm("คุณต้องการยกเลิกคำสั่งซื้อนี้และลบออกจากหน้าจอใช่หรือไม่?")) {
+            activeOrder = null;
+            localStorage.removeItem('knw_order');
+            forceRenderAll();
+        }
+    }
+
+    function cancelOrderByStudent() {
+        if (confirm("คุณต้องการยกเลิกคำสั่งซื้อนี้ใช่หรือไม่?")) {
+            if (activeOrder) {
+                activeOrder.status = 'ยกเลิกโดยนักเรียน';
+                activeOrder.cancelReason = 'นักเรียนขอยกเลิกออเดอร์';
+                localStorage.setItem('knw_order', JSON.stringify(activeOrder));
+                forceRenderAll();
+            }
+        }
+    }
+
+    function confirmReceivedByStudent() {
+        if (confirm("ยืนยันว่าคุณได้รับอาหารถูกต้องและครบถ้วนแล้วใช่หรือไม่?")) {
+            if (activeOrder) {
+                activeOrder.status = 'ได้รับอาหารแล้ว';
+                
+                completedOrders.push({...activeOrder});
+                localStorage.setItem('knw_completed_orders', JSON.stringify(completedOrders));
+                localStorage.setItem('knw_order', JSON.stringify(activeOrder));
+                
+                alert("ขอบคุณที่ใช้บริการ! ทำรายการสำเร็จแล้ว");
+                renderStudentHistory();
+                forceRenderAll();
+            }
+        }
+    }
+
+    function rejectOrderByMerchant() {
+        const reason = prompt("กรุณาระบุเหตุผลที่ไม่สามารถรับออเดอร์ได้:");
+        if (reason !== null && reason.trim() !== "") {
+            if (activeOrder) {
+                activeOrder.status = 'ร้านค้าไม่สามารถรับออเดอร์ได้';
+                activeOrder.cancelReason = reason;
+                localStorage.setItem('knw_order', JSON.stringify(activeOrder));
+                forceRenderAll();
+            }
+        } else if (reason !== null) {
+            alert("กรุณาระบุเหตุผลก่อนปฏิเสธรับออเดอร์");
+        }
+    }
+
+    function deleteOrder() {
+        if (confirm("คุณต้องการลบรายการออเดอร์นี้ออกจากหน้าจอใช่หรือไม่?")) {
+            activeOrder = null;
+            localStorage.removeItem('knw_order');
+            forceRenderAll();
+        }
+    }
+
+    function updateStatus(newStatus) {
+        if(activeOrder) {
+            activeOrder.status = newStatus;
+            localStorage.setItem('knw_order', JSON.stringify(activeOrder));
+            forceRenderAll();
+        }
+    }
+
+    function resetDailyRevenue() {
+        if (confirm("คุณต้องการล้างข้อมูลยอดขายและประวัติประวันเพื่อเริ่มวันใหม่ใช่หรือไม่?")) {
+            completedOrders = [];
+            localStorage.setItem('knw_completed_orders', JSON.stringify(completedOrders));
+            forceRenderAll();
+        }
+    }
+
+    function toggleStudentHistory() {
+        const histBox = document.getElementById('student-history-container');
+        histBox.classList.toggle('hidden');
+    }
+
+    function renderStudentHistory() {
+        const histContainer = document.getElementById('student-history-container');
+        const myHistory = completedOrders.filter(o => o.studentId === currentStudent.studentId);
+
+        if (myHistory.length === 0) {
+            histContainer.innerHTML = '<p style="color: #888; font-size: 12px;">ยังไม่มีประวัติการสั่งซื้อ</p>';
+            return;
         }
 
-        function renderMerchantOrders() {
-            const orders = JSON.parse(localStorage.getItem('knw_order')) || [];
-            const container = document.getElementById('merchant-orders-list');
-            document.getElementById('queue-counter').textContent = `(${orders.length}/50 คิวในรอบนี้)`;
-
-            // Sound alert for new orders
-            if (orders.length > previousOrderCount) {
-                playBeepSound();
-            }
-            previousOrderCount = orders.length;
-
-            // Revenue calculation
-            const completed = JSON.parse(localStorage.getItem('knw_completed_orders')) || [];
-            const totalRev = completed.reduce((sum, o) => sum + o.total, 0);
-            document.getElementById('merchant-revenue').textContent = `${totalRev} บาท`;
-            document.getElementById('merchant-completed-count').textContent = `ออเดอร์ที่รับสำเร็จแล้ว: ${completed.length} รายการ`;
-
-            if (orders.length === 0) {
-                container.innerHTML = '<p style="color: #888; font-size: 0.9rem;">ไม่มีออเดอร์เข้ามาในขณะนี้</p>';
-                return;
-            }
-
-            let html = '';
-            orders.forEach(o => {
-                html += `<div class="card">
-                    <div class="flex-between">
-                        <strong>คิว: ${o.id}</strong>
-                        <span class="badge badge-wait">${o.status}</span>
+        let html = "";
+        myHistory.forEach((item, idx) => {
+            let itemList = item.items.map(i => `${i.name}`).join(", ");
+            html += `
+                <div style="background:#f9f9f9; border:1px solid #eee; padding:8px; border-radius:6px; margin-top:5px; font-size:12px;">
+                    <div style="display:flex; justify-content:space-between; font-weight:600;">
+                        <span>#${idx+1} ออเดอร์ ${item.id}</span>
+                        <span style="color:var(--primary);">${item.totalPrice} บาท</span>
                     </div>
-                    <small>ผู้สั่ง: ${o.studentName} | รอบ: ${o.slot}</small>
-                    <div style="margin: 8px 0; font-size: 0.9rem;">
-                        ${o.items.map(i => `• ${i.name}${i.note ? `<span style="color:red;">(${i.note})</span>` : ''}`).join('<br>')}
+                    <div style="color:#666; margin-top:2px;">
+                        <span>เวลารับ: <b>${item.pickupTime}</b></span><br>
+                        <span>รายการ: ${itemList}</span>
                     </div>
-                    <div class="flex-between" style="margin-top: 10px;">
-                        <strong>ยอดรวม: ${o.total} บาท</strong>
-                        <div style="display: flex; gap: 4px;">
-                            ${o.status === 'รอรับออเดอร์' ? `
-                                <button onclick="updateOrderStatus('${o.id}', 'กำลังปรุง')" class="btn-primary" style="padding: 4px 8px; font-size: 0.8rem;">รับออเดอร์</button>
-                                <button onclick="rejectOrder('${o.id}')" class="btn-danger" style="padding: 4px 8px; font-size: 0.8rem;">ปฏิเสธ</button>
-                            ` : ''}
-                            ${o.status === 'กำลังปรุง' ? `
-                                <button onclick="updateOrderStatus('${o.id}', 'ทำเสร็จแล้ว')" class="btn-success" style="padding: 4px 8px; font-size: 0.8rem;">ปรุงเสร็จแล้ว</button>
-                            ` : ''}
+                </div>
+            `;
+        });
+        histContainer.innerHTML = html;
+    }
+
+    function forceRenderAll() {
+        lastActiveOrderJSON = "";
+        lastCompletedOrdersJSON = "";
+        syncOrderData();
+    }
+
+    function syncOrderData() {
+        const rawOrder = localStorage.getItem('knw_order');
+        const rawCompleted = localStorage.getItem('knw_completed_orders');
+        
+        activeOrder = rawOrder ? JSON.parse(rawOrder) : null;
+        completedOrders = rawCompleted ? JSON.parse(rawCompleted) : [];
+
+        if (activeOrder && activeOrder.id !== previousOrderIdForSound && activeOrder.status === 'รอรับออเดอร์') {
+            previousOrderIdForSound = activeOrder.id;
+            if (!document.getElementById('merchant-screen').classList.contains('hidden')) {
+                playNewOrderSound();
+            }
+        }
+
+        isStoreOpen = localStorage.getItem('knw_store_open') !== 'false';
+        storeClosedReason = localStorage.getItem('knw_store_closed_reason') || "ร้านค้าปิดรับออเดอร์ชั่วคราว";
+        updateStoreStatusUI();
+
+        const latestMenus = JSON.parse(localStorage.getItem('knw_merchant_menus')) || [];
+        if (JSON.stringify(latestMenus) !== JSON.stringify(merchantMenus)) {
+            merchantMenus = latestMenus;
+            renderMenuSelects();
+        }
+
+        if (rawOrder !== lastActiveOrderJSON || rawCompleted !== lastCompletedOrdersJSON) {
+            lastActiveOrderJSON = rawOrder;
+            lastCompletedOrdersJSON = rawCompleted;
+
+            if(!document.getElementById('student-screen').classList.contains('hidden')) {
+                renderStudentView();
+            }
+            if(!document.getElementById('merchant-screen').classList.contains('hidden')) {
+                renderMerchantView();
+            }
+        }
+    }
+
+    function renderStudentView() {
+        const container = document.getElementById('student-order-status');
+        if (!activeOrder) {
+            container.innerHTML = '<p style="color: #888; font-size: 13px;">ยังไม่มีคำสั่งซื้อในขณะนี้</p>';
+            return;
+        }
+
+        let badgeClass = "bg-wait";
+        if(activeOrder.status === 'กำลังปรุง') badgeClass = "bg-cook";
+        if(activeOrder.status === 'ทำเสร็จแล้ว') badgeClass = "bg-done";
+        if(activeOrder.status === 'ได้รับอาหารแล้ว') badgeClass = "bg-close";
+        if(activeOrder.status.includes('ยกเลิก') || activeOrder.status.includes('ไม่สามารถรับออเดอร์')) badgeClass = "bg-cancel";
+
+        let itemsHtml = activeOrder.items.map(item => 
+            `<li style="font-size: 13px;"><b>${item.name}</b> (${item.price} บาท) - <span style="color:#555;">${item.note}</span></li>`
+        ).join("");
+
+        let cancelButton = (activeOrder.status === 'รอรับออเดอร์') 
+            ? `<button class="btn-danger" style="font-size: 12px; padding: 6px;" onclick="cancelOrderByStudent()">ยกเลิกคำสั่งซื้อนี้</button>` 
+            : '';
+
+        // เพิ่มปุ่ม "แก้ไขเมนู / สั่งซื้อใหม่" คู่กับปุ่ม "ยกเลิกการสั่งซื้อ" เมื่อร้านป้าติ๋มปฏิเสธ
+        let rejectedActionButtons = (activeOrder.status === 'ร้านค้าไม่สามารถรับออเดอร์ได้') 
+            ? `<div style="display: flex; gap: 8px;">
+                <button class="btn-warning" style="font-size: 12px; padding: 6px; flex: 1;" onclick="editOrder()">แก้ไขเมนู / สั่งซื้อใหม่</button>
+                <button class="btn-danger" style="font-size: 12px; padding: 6px; flex: 1;" onclick="dismissRejectedOrder()">ยกเลิกการสั่งซื้อ</button>
+               </div>` 
+            : '';
+
+        let confirmReceivedBtn = (activeOrder.status === 'ทำเสร็จแล้ว') 
+            ? `<button class="btn-success" style="font-size: 13px; padding: 8px;" onclick="confirmReceivedByStudent()">ฉันได้รับอาหารเรียบร้อยแล้ว</button>` 
+            : '';
+
+        let cancelInfo = (activeOrder.cancelReason) 
+            ? `<p style="margin: 5px 0 0 0; font-size: 12px; color: #dc3545;"><b>เหตุผล:</b> ${activeOrder.cancelReason}</p>` 
+            : '';
+
+        container.innerHTML = `
+            <div class="card">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <b>หมายเลข: ${activeOrder.id}</b>
+                    <span class="badge ${badgeClass}">${activeOrder.status}</span>
+                </div>
+                <p style="margin: 4px 0; font-size: 12px; color: #f26522; font-weight:600;">
+                    ⏰ เวลารับอาหาร: ${activeOrder.pickupTime || 'คาบ 4 (11.10 น.)'}
+                </p>
+                <ul style="padding-left: 18px; margin: 8px 0;">
+                    ${itemsHtml}
+                </ul>
+                <p style="margin: 5px 0; font-weight: bold; font-size: 13px;">ราคารวมทั้งสิ้น: ${activeOrder.totalPrice} บาท</p>
+                ${cancelInfo}
+                <hr style="margin: 10px 0; border: 0.5px solid #eee;">
+                
+                ${cancelButton}
+                ${rejectedActionButtons}
+                ${confirmReceivedBtn}
+                
+                ${activeOrder.status === 'ทำเสร็จแล้ว' 
+                    ? '<p style="margin: 5px 0 0 0; font-size: 11px; color: #28a745;"><b>อาหารทำเสร็จแล้ว!</b> กรุณารับอาหาร ชำระเงิน แล้วกดปุ่ม "ฉันได้รับอาหารเรียบร้อยแล้ว"</p>' 
+                    : ''}
+                ${activeOrder.status === 'ได้รับอาหารแล้ว' 
+                    ? '<p style="margin: 5px 0 0 0; font-size: 11px; color: #6c757d;">ออเดอร์นี้เสร็จสมบูรณ์แล้ว</p>' 
+                    : ''}
+            </div>
+        `;
+    }
+
+    function renderMerchantView() {
+        let totalRevenue = completedOrders.reduce((sum, order) => sum + order.totalPrice, 0);
+        document.getElementById('daily-revenue').innerText = totalRevenue + " บาท";
+        document.getElementById('completed-orders-count').innerText = `ออเดอร์ที่รับสำเร็จแล้ว: ${completedOrders.length} รายการ`;
+
+        const activeQueueCount = (activeOrder && activeOrder.status !== 'ได้รับอาหารแล้ว') ? 1 : 0;
+        document.getElementById('queue-count-display').innerText = `(${activeQueueCount + completedOrders.length}/${MAX_QUEUE_LIMIT} คิวในรอบนี้)`;
+
+        const historyContainer = document.getElementById('revenue-history-list');
+        if (completedOrders.length === 0) {
+            historyContainer.innerHTML = '<p style="color: #888; font-size: 12px; margin: 0; text-align: center;">ยังไม่มีประวัติการขายในวันนี้</p>';
+        } else {
+            let historyHtml = "";
+            completedOrders.forEach((order, idx) => {
+                let itemsList = order.items.map(item => `${item.name} (${item.price}B)`).join(", ");
+                historyHtml += `
+                    <div class="history-card">
+                        <div style="display:flex; justify-content:space-between; font-weight:bold; color:#1b5e20;">
+                            <span>#${idx + 1} ออเดอร์ ${order.id}</span>
+                            <span>+${order.totalPrice} บาท</span>
+                        </div>
+                        <div style="color: #555; margin-top: 3px;">
+                            <small><b>เวลารับ:</b> ${order.pickupTime || '-'}</small><br>
+                            <small><b>ผู้สั่ง:</b> ${order.studentName} (${order.studentId})</small><br>
+                            <small><b>รายการ:</b> ${itemsList}</small>
                         </div>
                     </div>
-                </div>`;
+                `;
             });
-
-            container.innerHTML = html;
+            historyContainer.innerHTML = historyHtml;
         }
 
-        function updateOrderStatus(orderId, newStatus) {
-            let orders = JSON.parse(localStorage.getItem('knw_order')) || [];
-            const idx = orders.findIndex(o => o.id === orderId);
-            if (idx !== -1) {
-                orders[idx].status = newStatus;
-                localStorage.setItem('knw_order', JSON.stringify(orders));
-                renderMerchantOrders();
-            }
+        const container = document.getElementById('merchant-order-list');
+        if (!activeOrder || activeOrder.status === 'ได้รับอาหารแล้ว') {
+            container.innerHTML = '<p style="color: #888; font-size: 13px;">ไม่มีออเดอร์เข้ามาในขณะนี้</p>';
+            return;
         }
 
-        function rejectOrder(orderId) {
-            const reason = prompt('กรุณาระบุเหตุผลที่ไม่สามารถรับออเดอร์ได้ (เช่น วัตถุดิบหมด):', 'วัตถุดิบหมด');
-            if (reason) {
-                updateOrderStatus(orderId, `ร้านค้าไม่สามารถรับออเดอร์ได้ (${reason})`);
-            }
+        let itemsHtml = activeOrder.items.map(item => 
+            `<li style="font-size: 13px;"><b>${item.name}</b> (${item.price} บาท)<br><small style="color:#d9534f;">โน้ต: ${item.note}</small></li>`
+        ).join("");
+
+        let cancelInfo = (activeOrder.cancelReason) 
+            ? `<p style="margin: 5px 0 0 0; font-size: 12px; color: #dc3545;"><b>สถานะ/เหตุผล:</b> ${activeOrder.cancelReason}</p>` 
+            : '';
+
+        let actionButtons = "";
+        if (activeOrder.status === 'ยกเลิกโดยนักเรียน') {
+            actionButtons = `
+                <div style="margin-top: 10px;">
+                    <button class="btn-danger" style="font-size: 12px; padding: 6px;" onclick="deleteOrder()">ลบออเดอร์</button>
+                </div>
+            `;
+        } else {
+            actionButtons = `
+                <div style="display:flex; flex-wrap: wrap; gap: 4px; margin-top: 10px;">
+                    <button class="btn-status" style="background:#17a2b8; color:white;" onclick="updateStatus('กำลังปรุง')">1. รับออเดอร์</button>
+                    <button class="btn-status" style="background:#28a745; color:white;" onclick="updateStatus('ทำเสร็จแล้ว')">2. ทำเสร็จแล้ว/พร้อมส่งมอบ</button>
+                    <button class="btn-status" style="background:#dc3545; color:white;" onclick="rejectOrderByMerchant()">ไม่สามารถรับออเดอร์ได้</button>
+                </div>
+            `;
         }
 
-        function resetDailyRevenue() {
-            if (confirm('คุณต้องการรีเซ็ทยอดขายและประวัติออเดอร์ประจำวันทั้งหมดใช่หรือไม่?')) {
-                localStorage.setItem('knw_completed_orders', JSON.stringify([]));
-                renderMerchantOrders();
-                alert('รีเซ็ทยอดขายประจำวันเรียบร้อยแล้ว');
-            }
-        }
+        container.innerHTML = `
+            <div class="card" style="border-left: 5px solid var(--primary);">
+                <div style="display:flex; justify-content:space-between;">
+                    <b>ออเดอร์ ${activeOrder.id}</b>
+                    <small>${activeOrder.time} น.</small>
+                </div>
+                <div style="font-size: 12px; color: #333; margin-top: 4px;">
+                    <span style="color: #f26522; font-weight: bold;">⏰ เวลารับอาหาร: ${activeOrder.pickupTime || 'คาบ 4 (11.10 น.)'}</span><br>
+                    <b>เลขประจำตัว:</b> ${activeOrder.studentId || '-'}<br>
+                    <b>ผู้สั่ง:</b> ${activeOrder.studentName || 'นักเรียน'} (${activeOrder.studentClass || '-'} เลขที่ ${activeOrder.studentNo || '-'})
+                </div>
+                <ul style="padding-left: 18px; margin: 8px 0;">
+                    ${itemsHtml}
+                </ul>
+                <p style="margin: 5px 0 5px 0; font-weight: bold; font-size: 14px; color: var(--primary);">
+                    ยอดชำระหน้าร้านรวม: ${activeOrder.totalPrice} บาท
+                </p>
+                ${cancelInfo}
+                
+                ${actionButtons}
 
-        // --- REAL-TIME SYNC LOOP (1 SECOND INTERVAL) ---
-        setInterval(() => {
-            const isStudentActive = !document.getElementById('student-view').classList.contains('hidden');
-            const isMerchantActive = !document.getElementById('merchant-view').classList.contains('hidden');
+                ${activeOrder.status === 'ทำเสร็จแล้ว' 
+                    ? '<p style="margin: 8px 0 0 0; font-size: 11px; color: #ff9800;">* รอนักเรียนกดปุ่มยืนยัน "ได้รับอาหารแล้ว" เพื่อบันทึกเข้ายอดขาย</p>' 
+                    : ''}
+            </div>
+        `;
+    }
+</script>
 
-            if (isStudentActive) {
-                renderStudentOrders();
-            }
-            if (isMerchantActive) {
-                renderMerchantOrders();
-            }
-        }, 1000);
-    </script>
 </body>
 </html>
